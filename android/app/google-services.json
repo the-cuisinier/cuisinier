@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "390850612811",
+    "firebase_url": "https://the-cuisinier.firebaseio.com",
+    "project_id": "the-cuisinier",
+    "storage_bucket": "the-cuisinier.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390850612811:android:a1faa746c076fe953cc7ce",
+        "android_client_info": {
+          "package_name": "app.thecuisinier.cuisinier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "390850612811-kbh6qknvhmlsb4t8v4ugv8okpphsic28.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.thecuisinier.cuisinier",
+            "certificate_hash": "3a92bdae0e7a1ee6aaaafa157b45212f73d7ee20"
+          }
+        },
+        {
+          "client_id": "390850612811-vn824p7o2os17064pnp2s30d9n9353tf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7clbOwKQveuXZsxKQk5WbbsY3MUwQKJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "390850612811-vn824p7o2os17064pnp2s30d9n9353tf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
