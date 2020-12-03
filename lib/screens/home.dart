@@ -7,6 +7,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'package:cuisinier/utils/auth.dart';
 import 'package:cuisinier/screens/profile.dart';
+import 'package:cuisinier/screens/addIngredient.dart';
 
 class HomeScreen extends StatefulWidget {
   final FirebaseAuth auth;
@@ -107,9 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(
                         height: 24,
                       ),
-                      Text("Please add your thoughts!",
+                      Text("Please add some ingredients so that we can suggest some recipes!",
                           style: GoogleFonts.montserrat(
-                              fontSize: 18, fontWeight: FontWeight.w400))
+                              fontSize: 18, fontWeight: FontWeight.w400), textAlign: TextAlign.center,)
                     ],
                   ),
                 ),
@@ -271,7 +272,16 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => AddIngredientScreen(
+                user: widget.authHandler.user
+              )
+            )
+          );
+        },
         icon: Icon(Icons.edit),
         label: Text("Add ingredients"),
       ),

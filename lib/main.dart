@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
         title: 'Thoughts',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.red,
+          primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: AuthHandler());
