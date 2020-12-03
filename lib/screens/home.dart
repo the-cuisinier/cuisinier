@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share/share.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'package:cuisinier/utils/auth.dart';
 import 'package:cuisinier/screens/profile.dart';
@@ -33,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         title: Text(
-          "Your thoughts",
+          "The Cuisiner",
           style: GoogleFonts.montserrat(
               color: Colors.black, fontWeight: FontWeight.w500),
         ),
@@ -73,10 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       backgroundColor: Colors.white,
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection("posts")
-            .where("uid", isEqualTo: widget.authHandler.user.uid)
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection("recipes").limit(18).snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.none ||
               snapshot.connectionState == ConnectionState.waiting) {
@@ -121,6 +117,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListView.builder(
                     itemCount: snapshot.data.documents.length,
                     itemBuilder: (BuildContext context, int index) {
+                      List<Widget> listOfTagElements = List();
+                      for (var item in snapshot.data.documents[index]["tags"]) {
+                        var newTag = Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 2
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 5
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.lightGreenAccent[100]
+                              ),
+                              child: Text(
+                                item,
+                                style: GoogleFonts.montserrat(),
+                              ),
+                            ),
+                          ),
+                        );
+                        listOfTagElements.add(newTag);
+                      }
                       return Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -132,49 +153,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 ListTile(
                                   title: Text(
-                                    snapshot.data.documents[index]["title"],
+                                    snapshot.data.documents[index]["name"],
                                     style: GoogleFonts.montserrat(
-                                        color: Colors.red,
+                                        color: Colors.green,
                                         fontSize: 22,
                                         fontWeight: FontWeight.w500),
                                   ),
                                   subtitle: Padding(
                                     padding: EdgeInsets.symmetric(vertical: 8),
-                                    child: Column(
+                                    child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              snapshot
-                                                  .data.documents[index]["date"]
-                                                  .toString(),
-                                              style: GoogleFonts.montserrat(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w700),
-                                            ),
-                                            Text(
-                                              snapshot
-                                                  .data.documents[index]["time"]
-                                                  .toString(),
-                                              style: GoogleFonts.montserrat(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w700),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 12),
-                                        Text(
-                                          formatText(snapshot.data
-                                              .documents[index]["details"]),
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                      ],
+                                      children: listOfTagElements
                                     ),
                                   ),
                                 ),
@@ -182,63 +172,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     TextButton.icon(
-                                        onPressed: () async {
-                                          String docId =
-                                              snapshot.data.documents[index].id;
-                                          Alert(
-                                            context: context,
-                                            type: AlertType.warning,
-                                            title: "Delete thought?",
-                                            desc:
-                                                "You are going to delete this post. Are you sure you want to delete this?",
-                                            buttons: [
-                                              DialogButton(
-                                                child: Text(
-                                                  "Go Back",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20),
-                                                ),
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
-                                                color: Colors.grey,
-                                              ),
-                                              DialogButton(
-                                                  child: Text(
-                                                    "Delete",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 20),
-                                                  ),
-                                                  onPressed: () async {
-                                                    Navigator.pop(context);
-                                                    Future.delayed(
-                                                        Duration(seconds: 1));
-                                                    await FirebaseFirestore
-                                                        .instance
-                                                        .collection("posts")
-                                                        .doc(docId)
-                                                        .delete();
-                                                  },
-                                                  color: Colors.red)
-                                            ],
-                                          ).show();
-                                        },
-                                        icon:
-                                            Icon(Icons.delete_forever_rounded),
-                                        label: Text(
-                                          "Delete post",
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 14),
-                                        )),
-                                    TextButton.icon(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.article_outlined),
-                                        label: Text(
-                                          "Read more",
-                                          style: GoogleFonts.montserrat(
-                                              fontSize: 14),
-                                        ))
+                                      onPressed: () {},
+                                      icon: Icon(Icons.article_outlined),
+                                      label: Text(
+                                        "Read more",
+                                        style: GoogleFonts.montserrat(
+                                          fontSize: 14
+                                        ),
+                                      )
+                                    )
                                   ],
                                 )
                               ],
