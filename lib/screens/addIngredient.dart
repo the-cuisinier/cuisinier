@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cuisinier/utils/utilities.dart';
 
 class AddIngredientScreen extends StatefulWidget {
   final User user;
@@ -142,29 +143,25 @@ class _AddIngredientScreenState extends State<AddIngredientScreen> {
           setState(() {
             isSubmittingForm = true;
           });
+          Map<String, dynamic> ingredientDetails = {
+            "unit": dropdownValue,
+            "quantity": int.parse(quantityController.text.toString())
+          };
           var dataRef = FirebaseFirestore.instance.collection("inventory").doc(widget.user.uid);
           var data = await dataRef.get();
           Map<String, dynamic> inventory = data.data();
-          Map<String, dynamic> newIngredientMap = {
-            "name": ingredientNameController.text,
-            "quantity": int.parse(quantityController.text),
-            "unit": dropdownValue
-          };
-          if(inventory != null){
-            List ingredients = inventory["ingredients"];
-            ingredients.add(newIngredientMap);
-            inventory["ingredients"] = ingredients;
-            await dataRef.set(inventory);
+          bool haveUpdatedMap = false;
+          for (var key in inventory.keys) {
+            if(hamingDistanceErrorPercentage(key, ingredientNameController.text) <= 0.35){
+              inventory[key]["quantity"] = inventory[key]["quantity"] + ingredientDetails["quantity"];
+              haveUpdatedMap = true;
+              break;
+            }
           }
-          else{
-            Map<String, dynamic> inventoryDetails = {
-              "ingredients": []
-            };
-            List tempIngredientsList = List();
-            tempIngredientsList.add(newIngredientMap);
-            inventoryDetails["ingredients"] = tempIngredientsList;
-            await dataRef.set(inventoryDetails);
+          if(haveUpdatedMap == false){
+            inventory[ingredientNameController.text] = ingredientDetails;
           }
+          await dataRef.set(inventory);
           setState(() {
             isSubmittingForm = false;
           });
