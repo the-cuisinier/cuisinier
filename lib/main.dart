@@ -1,7 +1,6 @@
-import 'package:cuisinier/recipeDetails.dart';
 import 'package:flutter/material.dart';
-import 'package:cuisinier/recipeDetails.dart';
-//import 'package:cuisinier/utils/auth.dart';
+
+import 'package:cuisinier/utils/auth.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,8 +16,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: recipeDetails()
-        //AuthHandler()
+        home: AuthHandler()
         );
   }
 }
