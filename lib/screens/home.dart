@@ -11,6 +11,7 @@ import 'package:cuisinier/utils/ErrorScreen.dart';
 import '../utils/tempRecipeCard.dart';
 import 'package:cuisinier/screens/profile.dart';
 import 'package:cuisinier/screens/addIngredient.dart';
+import 'package:cuisinier/screens/splash.dart';
 
 class HomeScreen extends StatefulWidget {
   final FirebaseAuth auth;
@@ -22,6 +23,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  bool isAccountLoaded = false;
+  Map<String, dynamic> inventory;
+
   formatText(String data) {
     if (data.length <= 180) {
       return data;
@@ -29,9 +34,26 @@ class _HomeScreenState extends State<HomeScreen> {
     return data.substring(0, 180) + "...";
   }
 
+  fetchInventory() async {
+    var tempInventory = await FirebaseFirestore.instance.collection("inventory").doc(widget.authHandler.user.uid).get();
+    inventory = tempInventory.data();
+    for (var key in inventory.keys) {
+      print(key);
+    }
+    setState(() {
+      isAccountLoaded = true;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchInventory();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isAccountLoaded ? SplashScreen() : Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -76,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       backgroundColor: Colors.white,
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("recipes").limit(18).snapshots(),
+        stream: FirebaseFirestore.instance.collection("dish-index").snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.none ||
               snapshot.connectionState == ConnectionState.waiting) {
@@ -102,7 +124,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 user: widget.authHandler.user
               )
             )
-          );
+          ).then((data){
+            setState(() {
+              isAccountLoaded = false;
+            });
+            inventory.clear();
+            fetchInventory();
+          });
         },
         icon: Icon(Icons.edit),
         label: Text("Add ingredients"),
