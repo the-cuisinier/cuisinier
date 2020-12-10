@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class DelicioraScreen extends StatefulWidget {
   @override
@@ -9,10 +12,73 @@ class DelicioraScreen extends StatefulWidget {
 class _DelicioraScreenState extends State<DelicioraScreen> {
 
   bool hasMadeRequest = false;
+  File _image;
+  final picker = ImagePicker();
+
+  getResults() async {
+    var url = 'http://192.168.43.95:8000/upload/api';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    var fileName = _image.path.split("/").last;
+    request.files.add(
+      http.MultipartFile(
+        'image',
+        _image.readAsBytes().asStream(),
+        _image.lengthSync(),
+        filename: fileName
+      )
+    );
+    http.Response response = await http.Response.fromStream(await request.send());
+    print(response.body);
+  }
+
+  Future pickImageFromCamera() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+    await getResults();
+  }
+
+  Future pickImageFromGallery() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+    await getResults();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return hasMadeRequest ? SingleChildScrollView() : DelicioraInformationScreen();
+    return Scaffold(
+      body: hasMadeRequest ? SingleChildScrollView() : DelicioraInformationScreen(),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: "Camera Upload",
+            onPressed: () => pickImageFromCamera(),
+            child: Icon(Icons.camera_alt),
+          ),
+          SizedBox(
+            height: 18,
+          ),
+          FloatingActionButton(
+            heroTag: "Gallery Image Upload",
+            onPressed: () => pickImageFromGallery(),
+            child: Icon(Icons.image),
+          ),
+        ],
+      ),
+    );
   }
 }
 
