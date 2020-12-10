@@ -152,7 +152,7 @@ class _AddIngredientScreenState extends State<AddIngredientScreen> {
           Map<String, dynamic> inventory = data.data();
           bool haveUpdatedMap = false;
           for (var key in inventory.keys) {
-            if(hamingDistanceErrorPercentage(key, ingredientNameController.text) <= 0.35){
+            if(hamingDistanceErrorPercentage(key, ingredientNameController.text) <= 0.12){
               inventory[key]["quantity"] = inventory[key]["quantity"] + ingredientDetails["quantity"];
               haveUpdatedMap = true;
               break;
