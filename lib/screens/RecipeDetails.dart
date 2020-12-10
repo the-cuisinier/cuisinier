@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class recipeDetails extends StatelessWidget {
+class RecipeDetailsScreen extends StatefulWidget {
+  @override
+  _RecipeDetailsScreenState createState() => _RecipeDetailsScreenState();
+}
+
+class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -29,17 +34,14 @@ class recipeDetails extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              //e1 for photo
               Container(
                 width: double.infinity,
-                //MediaQuery.of(context).size.width / 1.2,
                 height: 400.0,
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image: AssetImage("assets/images/burger.jpg"),
                         fit: BoxFit.fill)),
               ),
-              //e2 for content
               SizedBox(
                 height: 10.0,
               ),
@@ -47,7 +49,6 @@ class recipeDetails extends StatelessWidget {
                 padding: const EdgeInsets.only(
                     top: 5.0, bottom: 10.0, left: 12.0, right: 12.0),
                 child: Column(
-                  //mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
