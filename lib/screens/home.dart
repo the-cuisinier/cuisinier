@@ -6,7 +6,7 @@ import 'package:cuisinier/utils/auth.dart';
 import 'package:cuisinier/utils/WaitingWidget.dart';
 import 'package:cuisinier/utils/EmptyWidget.dart';
 import 'package:cuisinier/utils/ErrorScreen.dart';
-import '../utils/tempRecipeCard.dart';
+import 'package:cuisinier/screens/RecipeCard.dart';
 import 'package:cuisinier/screens/addIngredient.dart';
 import 'package:cuisinier/screens/splash.dart';
 
@@ -63,7 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
             if (snapshot.data.documents.length == 0) {
               return EmptyWidget();
             } else {
-              return RecipeCard(docs: snapshot.data.documents);
+              return RecipeCard(
+                docs: snapshot.data.documents,
+                authHandler: widget.authHandler
+              );
             }
           } else {
             return ErrorScreenWidget();

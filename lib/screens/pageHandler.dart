@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share/share.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'package:cuisinier/utils/auth.dart';
 import 'package:cuisinier/screens/home.dart';
 import 'package:cuisinier/screens/profile.dart';
 import 'package:cuisinier/screens/deliciora.dart';
+import 'package:cuisinier/screens/cookBook.dart';
 
 class PageHandler extends StatefulWidget {
   final FirebaseAuth auth;
@@ -84,6 +87,15 @@ class _PageHandlerState extends State<PageHandler> {
               )
             ),
             ListTile(
+              onTap: (){
+                Navigator.pop(context);
+                setState(() {
+                  currPage = HomeScreen(
+                    auth: widget.auth,
+                    authHandler: widget.authHandler
+                  );
+                });
+              },
               title: Text(
                 "MagicBook",
                 style: GoogleFonts.montserrat(
@@ -111,6 +123,15 @@ class _PageHandlerState extends State<PageHandler> {
               ),
             ),
             ListTile(
+              onTap: (){
+                Navigator.pop(context);
+                setState(() {
+                  currPage = CookBookScreen(
+                    auth: widget.auth,
+                    authHandler: widget.authHandler,
+                  );
+                });
+              },
               title: Text(
                 "CookBook",
                 style: GoogleFonts.montserrat(
@@ -135,6 +156,20 @@ class _PageHandlerState extends State<PageHandler> {
               ),
             ),
             ListTile(
+              onTap: () async{
+                Navigator.pop(context);
+                String websiteUrl = 'https://the-cuisinier.web.app/';
+                if(await canLaunch(websiteUrl)){
+                  await launch(websiteUrl);
+                }
+                else{
+                  Alert(
+                      context: context,
+                      title:
+                          "An error occured.")
+                  .show();
+                }
+              },
               title: Text(
                 "About the Developers",
                 style: GoogleFonts.montserrat(

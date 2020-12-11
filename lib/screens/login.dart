@@ -54,7 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
       "name": name,
       "email": email,
       "photoUrl": photoUrl,
-      "uid": uid
+      "uid": uid,
+      "favorites": []
     };
 
     CollectionReference usersRef =

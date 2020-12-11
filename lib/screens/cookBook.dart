@@ -7,18 +7,18 @@ import 'package:cuisinier/utils/auth.dart';
 import 'package:cuisinier/utils/WaitingWidget.dart';
 import 'package:cuisinier/utils/EmptyWidget.dart';
 import 'package:cuisinier/utils/ErrorScreen.dart';
-import '../utils/tempRecipeCard.dart';
+import 'package:cuisinier/screens/RecipeCard.dart';
 
-class HomeScreen extends StatefulWidget {
+class CookBookScreen extends StatefulWidget {
   final FirebaseAuth auth;
   final AuthHandlerState authHandler;
-  HomeScreen({@required this.auth, @required this.authHandler});
+  CookBookScreen({@required this.auth, @required this.authHandler});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _CookBookScreenState createState() => _CookBookScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _CookBookScreenState extends State<CookBookScreen> {
 
   formatText(String data) {
     if (data.length <= 180) {
@@ -56,7 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
             if (snapshot.data.documents.length == 0) {
               return EmptyWidget();
             } else {
-              return RecipeCard(docs: snapshot.data.documents);
+              return RecipeCard(
+                docs: snapshot.data.documents,
+                authHandler: widget.authHandler
+              );
             }
           } else {
             return ErrorScreenWidget();

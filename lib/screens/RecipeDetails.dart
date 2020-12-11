@@ -1,46 +1,125 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cuisinier/utils/WaitingWidget.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
+  
+  final String recipeId;
+  RecipeDetailsScreen({
+    @required this.recipeId
+  });
+
   @override
   _RecipeDetailsScreenState createState() => _RecipeDetailsScreenState();
 }
 
 class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.white30,
-          leading: InkWell(
-            onTap: () => Navigator.pop(context),
-            child: Icon(
-              Icons.chevron_left_outlined,
-              color: Colors.black,
-              size: 45.0,
-            ),
-          ),
-          elevation: 2.0,
-          actions: [
-            Icon(
-              Icons.favorite_outline_outlined,
-              color: Colors.black,
-              size: 40.0,
+
+  Map<String, dynamic> recipeDetails;
+  List<Widget> listOfIngredients = List();
+  List<Widget> listOfSteps = List();
+
+  fetchRecipeDetails() async {
+    var recipeDocRef = await FirebaseFirestore.instance.collection("recipes").doc(widget.recipeId).get();
+    var recipeTutorial = recipeDocRef.data();
+    for (var item in recipeTutorial["ingredients"]) {
+      var newTempItem = Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: 5
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.book),
+            SizedBox(width: 5.0),
+            Flexible(
+              child: Text(
+                item,
+                style: GoogleFonts.montserrat(
+                    fontSize: 15.0, fontWeight: FontWeight.w300),
+              ),
             )
           ],
+        ),
+      );
+      listOfIngredients.add(newTempItem);
+    }
+    if(recipeTutorial["instructions"].runtimeType == String){
+      var nextStep = Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: 3
+          ),
+          child: Text(
+            recipeTutorial["instructions"],
+            maxLines: 2,
+            overflow: TextOverflow.clip,
+            style: GoogleFonts.montserrat(
+                fontSize: 15.0, fontWeight: FontWeight.w300),
+          )
+        );
+        listOfSteps.add(nextStep);
+    }
+    else{
+      for (var step in recipeTutorial["instructions"]) {
+        var nextStep = Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: 3
+          ),
+          child: Text(
+            step,
+            maxLines: 2,
+            overflow: TextOverflow.clip,
+            style: GoogleFonts.montserrat(
+                fontSize: 15.0, fontWeight: FontWeight.w300),
+          )
+        );
+        listOfSteps.add(nextStep);
+      }
+    }
+    setState(() {
+      recipeDetails = recipeTutorial;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRecipeDetails();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return recipeDetails != null ? Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.white38,
+          leading: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: InkWell(
+              onTap: () => Navigator.pop(context),
+              child: Icon(
+                Icons.chevron_left_outlined,
+                color: Colors.black,
+                size: 32.0,
+              ),
+            ),
+          ),
+          elevation: 0
         ),
         body: SingleChildScrollView(
           child: Column(
             children: [
               Container(
                 width: double.infinity,
-                height: 400.0,
+                height: MediaQuery.of(context).size.height / 2.8,
                 decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/images/burger.jpg"),
-                        fit: BoxFit.fill)),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      recipeDetails["imageUrl"]
+                    ),
+                    fit: BoxFit.cover
+                  )
+                ),
               ),
               SizedBox(
                 height: 10.0,
@@ -52,15 +131,14 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("Aged Vegnog",
-                            style: GoogleFonts.raleway(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 40.0,
-                            )),
-                        SizedBox(
-                          width: 100.0,
+                          style: GoogleFonts.montserrat(
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 28
+                          )
                         ),
                         Icon(
                           Icons.share,
@@ -69,80 +147,20 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                       ],
                     ),
                     SizedBox(
-                      width: 15.0,
+                      height: 24,
                     ),
                     Text(
                       "Ingredients",
                       style: GoogleFonts.raleway(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w400,
                           color: Colors.black,
                           fontSize: 25.0),
                     ),
-                    Row(
-                      children: [
-                        Icon(Icons.book),
-                        SizedBox(width: 5.0),
-                        Text(
-                          "3 Tbs of Ghee",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 15.0, fontWeight: FontWeight.w300),
-                        )
-                      ],
+                    SizedBox(
+                      height: 16,
                     ),
-                    Row(
-                      children: [
-                        Icon(Icons.book),
-                        SizedBox(width: 5.0),
-                        Text(
-                          "1 Pound Sugar",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 15.0, fontWeight: FontWeight.w300),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.book),
-                        SizedBox(width: 5.0),
-                        Text(
-                          "1 pint half-n-half",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 15.0, fontWeight: FontWeight.w300),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.book),
-                        SizedBox(width: 5.0),
-                        Text(
-                          "1 pint whole milk",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 15.0, fontWeight: FontWeight.w300),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.book),
-                        SizedBox(width: 5.0),
-                        Text(
-                          "1 pint heavy cream",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 15.0, fontWeight: FontWeight.w300),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.book),
-                        SizedBox(width: 5.0),
-                        Text(
-                          "1 cup Jamaican rum (optional)",
-                          style: GoogleFonts.montserrat(
-                              fontSize: 15.0, fontWeight: FontWeight.w300),
-                        )
-                      ],
+                    Column(
+                      children: listOfIngredients
                     ),
                     SizedBox(
                       height: 15.0,
@@ -150,50 +168,22 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     Text(
                       "Instructions",
                       style: GoogleFonts.raleway(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w400,
                         color: Colors.black,
                         fontSize: 25.0,
                       ),
                     ),
-                    Text(
-                      "1.  Separate the eggs and store the whites for another purpose.",
-                      maxLines: 2,
-                      overflow: TextOverflow.clip,
-                      style: GoogleFonts.montserrat(
-                          fontSize: 15.0, fontWeight: FontWeight.w300),
-                    ),
-                    SizedBox(height: 5.0),
-                    Text(
-                      "2.  Beat the yolks with the sugar and nutmeg in a large mixing bowl until the mixture lightens in color and falls off the whisk in a solid",
-                      maxLines: 3,
-                      overflow: TextOverflow.clip,
-                      style: GoogleFonts.montserrat(
-                          fontSize: 15.0, fontWeight: FontWeight.w300),
-                    ),
-                    SizedBox(height: 5.0),
-                    Text(
-                      "3.  Combine dairy, booze and salt in a second bowl or pitcher and then slowly beat into the egg mixture.",
-                      maxLines: 3,
-                      overflow: TextOverflow.clip,
-                      style: GoogleFonts.montserrat(
-                          fontSize: 15.0, fontWeight: FontWeight.w300),
-                    ),
-                    SizedBox(height: 5.0),
-                    Text(
-                      "4.  Move to a large glass jar (or a couple of smaller ones) and store in the fridge for a minimum of 2 weeks. A month would be better, and two better still. In fact, there's nothing that says you couldn't age it a year, but I've just never been able to wait that long. (And yes, you can also drink it right away.)",
-                      maxLines: 7,
-                      overflow: TextOverflow.clip,
-                      style: GoogleFonts.montserrat(
-                          fontSize: 15.0, fontWeight: FontWeight.w300),
-                    ),
-                    SizedBox(height: 15.0),
+                    Column(
+                      children: listOfSteps,
+                    )
                   ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
+      ) : Scaffold(
+        body: WaitingWidget(),
+      );
   }
 }
