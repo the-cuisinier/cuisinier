@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:cuisinier/screens/deliciora-dish.dart';
 
 class DelicioraScreen extends StatefulWidget {
   @override
@@ -12,11 +14,57 @@ class DelicioraScreen extends StatefulWidget {
 class _DelicioraScreenState extends State<DelicioraScreen> {
 
   bool hasMadeRequest = false;
+  String localhostIP = '192.168.42.38';
   File _image;
   final picker = ImagePicker();
+  List<Widget> delicioraAiResults = List();
+  TextEditingController ipController = TextEditingController();
+
+  Future<void> _showDialogBox() async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text(
+            "Enter IPv4",
+            style: GoogleFonts.montserrat(
+              fontWeight: FontWeight.w300
+            ),
+          ),
+          content: TextFormField(
+            controller: ipController,
+            keyboardType: TextInputType.number,
+            style: GoogleFonts.montserrat(
+              fontWeight: FontWeight.w300
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: (){
+                setState(() {
+                  localhostIP = ipController.text;
+                });
+                Navigator.pop(context);
+              },
+              child: Text(
+                "Update IP",
+                style: GoogleFonts.montserrat(
+                  fontWeight: FontWeight.w300
+                ),
+              )
+            )
+          ],
+        );
+      }
+    );
+  }
 
   getResults() async {
-    var url = 'http://192.168.43.95:8000/upload/api';
+    setState(() {
+      delicioraAiResults.clear();
+    });
+    var url = 'http://${localhostIP}:8000/upload/api';
     var request = http.MultipartRequest('POST', Uri.parse(url));
     var fileName = _image.path.split("/").last;
     request.files.add(
@@ -28,10 +76,41 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
       )
     );
     http.Response response = await http.Response.fromStream(await request.send());
-    print(response.body);
+    Map<String, dynamic> result = json.decode(response.body.toString());
+    for (var key in result.keys){
+      var newWidget = ListTile(
+        key: Key(key),
+        title: Text(
+          result[key]["name"],
+          style: GoogleFonts.montserrat(
+            fontSize: 20,
+            fontWeight: FontWeight.w300
+          ),
+        ),
+        trailing: Icon(Icons.chevron_right),
+        onTap: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => DelicioraDishScreen(
+                image: _image,
+                title: result[key]["name"],
+                ingredients: result[key]["ingredients"],
+                steps: result[key]["instructions"]
+              )
+            )
+          );
+        },
+      );
+      delicioraAiResults.add(newWidget);
+    }
+    setState(() {
+      hasMadeRequest = true;
+    });
   }
 
   Future pickImageFromCamera() async {
+    await _showDialogBox();
     final pickedFile = await picker.getImage(source: ImageSource.camera);
     setState(() {
       if (pickedFile != null) {
@@ -40,10 +119,16 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
         print('No image selected.');
       }
     });
-    await getResults();
+    setState(() {
+      hasMadeRequest = false;
+    });
+    if(await _image.exists()){
+      await getResults();
+    }
   }
 
   Future pickImageFromGallery() async {
+    await _showDialogBox();
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
@@ -52,14 +137,39 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
         print('No image selected.');
       }
     });
-    await getResults();
+    setState(() {
+      hasMadeRequest = false;
+    });
+    if(await _image.exists()){
+      await getResults();
+    }
   }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: hasMadeRequest ? SingleChildScrollView() : DelicioraInformationScreen(),
+      body: hasMadeRequest ? SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 32,
+            ),
+            Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width / 1.2,
+                child: Image.file(_image),
+              ),
+            ),
+            SizedBox(
+              height: 36,
+            ),
+            Column(
+              children: delicioraAiResults,
+            )
+          ]
+        ),
+      ) : DelicioraInformationScreen(),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -85,9 +195,7 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
 class DelicioraInformationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
+    return SingleChildScrollView(
       child: Center(
         child: Column(
           children: [
