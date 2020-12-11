@@ -14,11 +14,15 @@ class SplashScreen extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.height / 2.4,
+                ),
+                SizedBox(
+                  height: 4,
+                  width: 120,
                   child: LinearProgressIndicator(),
                 ),
                 SizedBox(
-                  height: 28,
+                  height: 64,
                 ),
                 Text(
                   "The Cuisinier",

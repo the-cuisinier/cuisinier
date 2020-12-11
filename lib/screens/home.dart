@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:share/share.dart';
 
 import 'package:cuisinier/utils/auth.dart';
 import 'package:cuisinier/utils/WaitingWidget.dart';
 import 'package:cuisinier/utils/EmptyWidget.dart';
 import 'package:cuisinier/utils/ErrorScreen.dart';
 import '../utils/tempRecipeCard.dart';
-import 'package:cuisinier/screens/profile.dart';
 import 'package:cuisinier/screens/addIngredient.dart';
 import 'package:cuisinier/screens/splash.dart';
 
@@ -37,9 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
   fetchInventory() async {
     var tempInventory = await FirebaseFirestore.instance.collection("inventory").doc(widget.authHandler.user.uid).get();
     inventory = tempInventory.data();
-    for (var key in inventory.keys) {
-      print(key);
-    }
+    // for (var key in inventory.keys) {
+    //   print(key);
+    // }
     setState(() {
       isAccountLoaded = true;
     });
@@ -53,52 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return isAccountLoaded ? SplashScreen() : Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          "The Cuisiner",
-          style: GoogleFonts.montserrat(
-              color: Colors.black, fontWeight: FontWeight.w500),
-        ),
-        actions: [
-          InkWell(
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => ProfileScreen(
-                          auth: widget.auth,
-                          authHandler: widget.authHandler,
-                        ))),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 14),
-              child: Icon(
-                Icons.account_circle,
-                color: Colors.black,
-                size: 28,
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              Share.share(
-                  "Hey\nJoin me in using the cuisinier to to recommend you dishes you can cook in the most optimal way. Check out https://the-cuisinier.web.app/ right now!");
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 14),
-              child: Icon(
-                Icons.share,
-                color: Colors.black,
-                size: 28,
-              ),
-            ),
-          )
-        ],
-      ),
+    return isAccountLoaded ? Scaffold(
       backgroundColor: Colors.white,
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("dish-index").snapshots(),
+        stream: FirebaseFirestore.instance.collection("dish-index").limit(12).snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.none ||
               snapshot.connectionState == ConnectionState.waiting) {
@@ -134,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         icon: Icon(Icons.edit),
         label: Text("Add ingredients"),
-      ),
-    );
+      )
+    ) : SplashScreen();
   }
 }

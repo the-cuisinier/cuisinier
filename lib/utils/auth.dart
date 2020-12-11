@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:cuisinier/screens/splash.dart';
 import 'package:cuisinier/screens/login.dart';
-import 'package:cuisinier/screens/home.dart';
+import 'package:cuisinier/screens/pageHandler.dart';
 
 class AuthHandler extends StatefulWidget {
   @override
@@ -53,7 +53,7 @@ class AuthHandlerState extends State<AuthHandler> {
     return isSignedIn == null
         ? SplashScreen()
         : isSignedIn == true
-            ? HomeScreen(
+            ? PageHandler(
                 auth: auth,
                 authHandler: this,
               )
