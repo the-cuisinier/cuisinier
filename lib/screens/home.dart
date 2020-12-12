@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Map<String, dynamic> sortedOrderMap = {};
     for (var key in dishesThatCanBeCooked.keys) {
       var newKey = dishesThatCanBeCooked[key].toString();
-      print(sortedOrderMap.keys);
       if(sortedOrderMap.containsKey(newKey)){
         List newList = sortedOrderMap[newKey];
         newList.add(key);

@@ -22,6 +22,7 @@ dependencies:
   image_picker: ^0.6.7+14
   http: ^0.12.2
   url_launcher: ^5.7.10
+  font_awesome_flutter: ^8.10.1
 
 dev_dependencies:
   flutter_test:

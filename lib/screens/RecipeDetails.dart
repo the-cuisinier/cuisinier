@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cuisinier/utils/WaitingWidget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class RecipeDetailsScreen extends StatefulWidget {
   
@@ -133,13 +136,16 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          recipeDetails["name"],
-                          style: GoogleFonts.montserrat(
-                            color: Colors.green,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 28
-                          )
+                        Flexible(
+                          child: Text(
+                            recipeDetails["name"],
+                            style: GoogleFonts.montserrat(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 25,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         Icon(
                           Icons.share,
@@ -182,6 +188,15 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
               ),
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(FontAwesomeIcons.spotify),
+          onPressed: () async {
+            String playlistUrl = 'https://open.spotify.com/playlist/3o7230LSFvwTLl3ZyjBE0x?si=ufjhtzAnRsuUtNTzwB4xcw';
+            if(await canLaunch(playlistUrl)){
+              await launch(playlistUrl);
+            }
+          },
         ),
       ) : Scaffold(
         body: WaitingWidget(),
