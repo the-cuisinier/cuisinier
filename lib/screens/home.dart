@@ -31,12 +31,62 @@ class _HomeScreenState extends State<HomeScreen> {
     return data.substring(0, 180) + "...";
   }
 
+
+  getDishes() async {
+    Map<String, dynamic> dishesThatCanBeCooked = {};
+    var collectionRef = FirebaseFirestore.instance.collection("index");
+    for (var ingredient in inventory.keys) {
+      try {
+        var fetchingDishes = await collectionRef.doc(ingredient).get();
+        var ingredientSpecificDishMap = fetchingDishes.data();
+        if(ingredientSpecificDishMap != null){
+          for (var dishes in ingredientSpecificDishMap["recipes"]) {
+            try {
+              dishesThatCanBeCooked[dishes] = dishesThatCanBeCooked[dishes] + 1;
+            } catch (e) {
+              dishesThatCanBeCooked[dishes] = 1;
+            }
+          }
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+    List resultsId = List();
+    Map<String, dynamic> sortedOrderMap = {};
+    for (var key in dishesThatCanBeCooked.keys) {
+      var newKey = dishesThatCanBeCooked[key].toString();
+      print(sortedOrderMap.keys);
+      if(sortedOrderMap.containsKey(newKey)){
+        List newList = sortedOrderMap[newKey];
+        newList.add(key);
+        sortedOrderMap["$newKey"] = newList;
+      }
+      else {
+        List tempNewList = List();
+        tempNewList.add(key);
+        sortedOrderMap["$newKey"] = tempNewList;
+      }
+    }
+    for (var key in sortedOrderMap.keys.toList().reversed) {
+      for (var item in sortedOrderMap[key]) {
+        resultsId.add(item);
+      }
+    }
+    List results = List();
+    CollectionReference dishIndexRef = FirebaseFirestore.instance.collection("dish-index");
+    for (var id in resultsId) {
+      var details = await dishIndexRef.doc(id).get();
+      var data = details.data();
+      results.add(data);
+    }
+    return results;
+  }
+
+
   fetchInventory() async {
     var tempInventory = await FirebaseFirestore.instance.collection("inventory").doc(widget.authHandler.user.uid).get();
     inventory = tempInventory.data();
-    // for (var key in inventory.keys) {
-    //   print(key);
-    // }
     setState(() {
       isAccountLoaded = true;
     });
@@ -52,19 +102,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return isAccountLoaded ? Scaffold(
       backgroundColor: Colors.white,
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("dish-index").limit(12).snapshots(),
+      body: FutureBuilder(
+        future: getDishes(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.none ||
               snapshot.connectionState == ConnectionState.waiting) {
             return WaitingWidget();
           } else if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.data.documents.length == 0) {
+            if (snapshot.data.length == 0) {
               return EmptyWidget();
             } else {
               return RecipeCard(
-                docs: snapshot.data.documents,
+                docs: snapshot.data,
                 authHandler: widget.authHandler
               );
             }

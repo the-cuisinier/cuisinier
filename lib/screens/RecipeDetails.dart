@@ -133,7 +133,8 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Aged Vegnog",
+                        Text(
+                          recipeDetails["name"],
                           style: GoogleFonts.montserrat(
                             color: Colors.green,
                             fontWeight: FontWeight.w600,

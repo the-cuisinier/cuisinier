@@ -17,7 +17,7 @@ class DelicioraDishScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    var height = size.height;
+    // var height = size.height;
     var width = size.width;
     List<Widget> listOfIngredients = List();
     List<Widget> stepsToMakeDish = List();

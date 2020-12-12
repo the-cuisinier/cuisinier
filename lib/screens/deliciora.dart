@@ -64,7 +64,7 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
     setState(() {
       delicioraAiResults.clear();
     });
-    var url = 'http://${localhostIP}:8000/upload/api';
+    var url = 'http://$localhostIP:8000/upload/api';
     var request = http.MultipartRequest('POST', Uri.parse(url));
     var fileName = _image.path.split("/").last;
     request.files.add(
