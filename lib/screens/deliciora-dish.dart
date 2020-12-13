@@ -1,6 +1,10 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:cuisinier/utils/utilities.dart';
 
 class DelicioraDishScreen extends StatelessWidget {
   final String title;
@@ -162,6 +166,16 @@ class DelicioraDishScreen extends StatelessWidget {
             )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(FontAwesomeIcons.spotify),
+        onPressed: () async {
+          Random newRandomiserObject = Random();
+          String playlistUrl = spotifyPlaylists[newRandomiserObject.nextInt(spotifyPlaylists.length)];
+          if(await canLaunch(playlistUrl)){
+            await launch(playlistUrl);
+          }
+        },
       ),
     );
   }
