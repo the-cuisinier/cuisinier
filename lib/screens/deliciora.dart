@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:cuisinier/screens/deliciora-dish.dart';
+import 'package:cuisinier/utils/WaitingWidget.dart';
 
 class DelicioraScreen extends StatefulWidget {
   @override
@@ -13,56 +14,18 @@ class DelicioraScreen extends StatefulWidget {
 
 class _DelicioraScreenState extends State<DelicioraScreen> {
 
-  bool hasMadeRequest = false;
-  String localhostIP = '192.168.42.38';
+  bool hasMadeRequest = false, waitingForServerResponse = true;
+  String localhostIP = '192.168.43.95';
   File _image;
   final picker = ImagePicker();
   List<Widget> delicioraAiResults = List();
   TextEditingController ipController = TextEditingController();
 
-  Future<void> _showDialogBox() async {
-    return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: Text(
-            "Enter IPv4",
-            style: GoogleFonts.montserrat(
-              fontWeight: FontWeight.w300
-            ),
-          ),
-          content: TextFormField(
-            controller: ipController,
-            keyboardType: TextInputType.number,
-            style: GoogleFonts.montserrat(
-              fontWeight: FontWeight.w300
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: (){
-                setState(() {
-                  localhostIP = ipController.text;
-                });
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Update IP",
-                style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.w300
-                ),
-              )
-            )
-          ],
-        );
-      }
-    );
-  }
-
   getResults() async {
     setState(() {
       delicioraAiResults.clear();
+      hasMadeRequest = true;
+      waitingForServerResponse = true;
     });
     var url = 'http://$localhostIP:8000/upload/api';
     var request = http.MultipartRequest('POST', Uri.parse(url));
@@ -77,6 +40,7 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
     );
     http.Response response = await http.Response.fromStream(await request.send());
     Map<String, dynamic> result = json.decode(response.body.toString());
+    await Future.delayed(Duration(seconds: 2));
     for (var key in result.keys){
       var newWidget = ListTile(
         key: Key(key),
@@ -105,12 +69,11 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
       delicioraAiResults.add(newWidget);
     }
     setState(() {
-      hasMadeRequest = true;
+      waitingForServerResponse = false;
     });
   }
 
   Future pickImageFromCamera() async {
-    await _showDialogBox();
     final pickedFile = await picker.getImage(source: ImageSource.camera);
     setState(() {
       if (pickedFile != null) {
@@ -128,7 +91,6 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
   }
 
   Future pickImageFromGallery() async {
-    await _showDialogBox();
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
@@ -149,7 +111,7 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: hasMadeRequest ? SingleChildScrollView(
+      body: hasMadeRequest ? waitingForServerResponse ? WaitingWidget() : SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(

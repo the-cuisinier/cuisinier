@@ -110,7 +110,7 @@ class _AddIngredientScreenState extends State<AddIngredientScreen> {
               DropdownButton<String>(
                 value: dropdownValue,
                 icon: Icon(Icons.arrow_drop_down),
-                items: <String>['Grams', 'ml']
+                items: <String>['Grams', 'ml', 'number', 'cups', 'tsp', 'tbsp', 'leaves']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,

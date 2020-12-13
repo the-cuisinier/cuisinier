@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:cuisinier/utils/auth.dart';
@@ -7,7 +8,7 @@ import 'package:cuisinier/utils/WaitingWidget.dart';
 import 'package:cuisinier/utils/EmptyWidget.dart';
 import 'package:cuisinier/utils/ErrorScreen.dart';
 import 'package:cuisinier/screens/RecipeCard.dart';
-import 'package:cuisinier/screens/addIngredient.dart';
+import 'package:cuisinier/screens/inventory.dart';
 import 'package:cuisinier/screens/splash.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -127,8 +128,9 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => AddIngredientScreen(
-                user: widget.authHandler.user
+              builder: (BuildContext context) => InventoryScreen(
+                auth: widget.auth,
+                authHandler: widget.authHandler
               )
             )
           ).then((data){
@@ -139,8 +141,10 @@ class _HomeScreenState extends State<HomeScreen> {
             fetchInventory();
           });
         },
-        icon: Icon(Icons.edit),
-        label: Text("Add ingredients"),
+        icon: Icon(
+          FontAwesomeIcons.stickyNote
+        ),
+        label: Text("Inventory"),
       )
     ) : SplashScreen();
   }

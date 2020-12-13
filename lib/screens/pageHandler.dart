@@ -74,16 +74,54 @@ class _PageHandlerState extends State<PageHandler> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              child: Text(
-                "The Cuisiner",
-                style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  fontSize: 24
-                )
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          widget.authHandler.user.photoURL
+                        ),
+                        radius: 20,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 12
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.authHandler.user.displayName,
+                              style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                                fontSize: 18
+                              )
+                            ),
+                            SizedBox(),
+                            Text(
+                              widget.authHandler.user.email,
+                              style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black,
+                                fontSize: 15
+                              )
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ),
               decoration: BoxDecoration(
-                color: Colors.greenAccent
+                image: DecorationImage(
+                  image: AssetImage("assets/images/background-vector.jpg"),
+                  fit: BoxFit.cover
+                )
               )
             ),
             ListTile(

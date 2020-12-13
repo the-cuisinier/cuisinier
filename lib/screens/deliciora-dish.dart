@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class DelicioraDishScreen extends StatelessWidget {
   final String title;
-  final List<String> ingredients, steps;
+  final List<dynamic> ingredients, steps;
   final File image;
 
   DelicioraDishScreen({
