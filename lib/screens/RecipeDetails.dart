@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cuisinier/utils/WaitingWidget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:cuisinier/utils/utilities.dart';
+import 'dart:math';
 
 class RecipeDetailsScreen extends StatefulWidget {
   
@@ -192,7 +193,8 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         floatingActionButton: FloatingActionButton(
           child: Icon(FontAwesomeIcons.spotify),
           onPressed: () async {
-            String playlistUrl = 'https://open.spotify.com/playlist/3o7230LSFvwTLl3ZyjBE0x?si=ufjhtzAnRsuUtNTzwB4xcw';
+            Random newRandomiserObject = Random();
+            String playlistUrl = spotifyPlaylists[newRandomiserObject.nextInt(spotifyPlaylists.length)];
             if(await canLaunch(playlistUrl)){
               await launch(playlistUrl);
             }

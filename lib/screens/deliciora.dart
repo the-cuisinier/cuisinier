@@ -1,3 +1,5 @@
+deliciora
+
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -5,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:cuisinier/screens/deliciora-dish.dart';
-import 'package:cuisinier/utils/WaitingWidget.dart';
+import 'package:cuisinier/utils/processingDish.dart';
 
 class DelicioraScreen extends StatefulWidget {
   @override
@@ -27,20 +29,37 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
       hasMadeRequest = true;
       waitingForServerResponse = true;
     });
-    var url = 'http://$localhostIP:8000/upload/api';
-    var request = http.MultipartRequest('POST', Uri.parse(url));
-    var fileName = _image.path.split("/").last;
-    request.files.add(
-      http.MultipartFile(
-        'image',
-        _image.readAsBytes().asStream(),
-        _image.lengthSync(),
-        filename: fileName
-      )
-    );
-    http.Response response = await http.Response.fromStream(await request.send());
-    Map<String, dynamic> result = json.decode(response.body.toString());
-    await Future.delayed(Duration(seconds: 2));
+    // var url = 'http://$localhostIP:8000/upload/api';
+    // var request = http.MultipartRequest('POST', Uri.parse(url));
+    // var fileName = _image.path.split("/").last;
+    // request.files.add(
+    //   http.MultipartFile(
+    //     'image',
+    //     _image.readAsBytes().asStream(),
+    //     _image.lengthSync(),
+    //     filename: fileName
+    //   )
+    // );
+    // http.Response response = await http.Response.fromStream(await request.send());
+    // Map<String, dynamic> result = json.decode(response.body.toString());
+    Map<String, dynamic> result = {
+      "lemon-juice": {
+        "name": "Lemon Juice",
+        "ingredients": [
+          "lemon",
+          "kosher salt",
+          "water",
+          "sugar"
+        ],
+        "instructions": [
+          "Squeeze a lemon into a glass of water",
+          "Add some kosher salt",
+          "Add a tbsp of sugar",
+          "Stir!"
+        ],
+      }
+    };
+    await Future.delayed(Duration(seconds: 5));
     for (var key in result.keys){
       var newWidget = ListTile(
         key: Key(key),
@@ -111,7 +130,9 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: hasMadeRequest ? waitingForServerResponse ? WaitingWidget() : SingleChildScrollView(
+      body: hasMadeRequest ? waitingForServerResponse ? ProcessingDish(
+        image: _image,
+      ) : SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(
