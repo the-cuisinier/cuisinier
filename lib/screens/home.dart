@@ -102,15 +102,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return isAccountLoaded ? Scaffold(
       backgroundColor: Colors.white,
-      body: FutureBuilder(
-        future: getDishes(),
+      body: StreamBuilder(
+        stream: Stream.fromFuture(getDishes()),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.none ||
               snapshot.connectionState == ConnectionState.waiting) {
             return WaitingWidget();
           } else if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.data.length == 0) {
+            if (snapshot.data == null) {
               return EmptyWidget();
             } else {
               return RecipeCard(
@@ -133,12 +133,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 authHandler: widget.authHandler
               )
             )
-          ).then((data){
+          ).then((data) async {
+            if(inventory != null){
+              inventory.clear();
+            }
+            fetchInventory();
             setState(() {
               isAccountLoaded = false;
             });
-            inventory.clear();
-            fetchInventory();
           });
         },
         icon: Icon(

@@ -151,14 +151,20 @@ class _AddIngredientScreenState extends State<AddIngredientScreen> {
           var data = await dataRef.get();
           Map<String, dynamic> inventory = data.data();
           bool haveUpdatedMap = false;
-          for (var key in inventory.keys) {
-            if(hamingDistanceErrorPercentage(key, ingredientNameController.text) <= 0.12){
-              inventory[key]["quantity"] = inventory[key]["quantity"] + ingredientDetails["quantity"];
-              haveUpdatedMap = true;
-              break;
+          if(inventory != null){
+            for (var key in inventory.keys) {
+              if(hamingDistanceErrorPercentage(key, ingredientNameController.text) <= 0.12){
+                inventory[key]["quantity"] = inventory[key]["quantity"] + ingredientDetails["quantity"];
+                haveUpdatedMap = true;
+                break;
+              }
+            }
+            if(haveUpdatedMap == false){
+              inventory[ingredientNameController.text] = ingredientDetails;
             }
           }
-          if(haveUpdatedMap == false){
+          else{
+            inventory = {};
             inventory[ingredientNameController.text] = ingredientDetails;
           }
           await dataRef.set(inventory);

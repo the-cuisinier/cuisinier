@@ -69,11 +69,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
             return WaitingWidget();
           } else if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.data == null) {
+                DocumentSnapshot temp = snapshot.data;
+              Map<String, dynamic> ingredients = temp.data();
+            if (ingredients == null) {
               return EmptyWidget();
             } else {
-              DocumentSnapshot temp = snapshot.data;
-              Map<String, dynamic> ingredients = temp.data();
               List<Widget> listOfIngredients = List();
               for (var key in ingredients.keys) {
                 Widget newIngredient = ListTile(
