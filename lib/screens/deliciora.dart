@@ -1,5 +1,3 @@
-deliciora
-
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -29,36 +27,19 @@ class _DelicioraScreenState extends State<DelicioraScreen> {
       hasMadeRequest = true;
       waitingForServerResponse = true;
     });
-    // var url = 'http://$localhostIP:8000/upload/api';
-    // var request = http.MultipartRequest('POST', Uri.parse(url));
-    // var fileName = _image.path.split("/").last;
-    // request.files.add(
-    //   http.MultipartFile(
-    //     'image',
-    //     _image.readAsBytes().asStream(),
-    //     _image.lengthSync(),
-    //     filename: fileName
-    //   )
-    // );
-    // http.Response response = await http.Response.fromStream(await request.send());
-    // Map<String, dynamic> result = json.decode(response.body.toString());
-    Map<String, dynamic> result = {
-      "lemon-juice": {
-        "name": "Lemon Juice",
-        "ingredients": [
-          "lemon",
-          "kosher salt",
-          "water",
-          "sugar"
-        ],
-        "instructions": [
-          "Squeeze a lemon into a glass of water",
-          "Add some kosher salt",
-          "Add a tbsp of sugar",
-          "Stir!"
-        ],
-      }
-    };
+    var url = 'http://$localhostIP:8000/upload/api';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    var fileName = _image.path.split("/").last;
+    request.files.add(
+      http.MultipartFile(
+        'image',
+        _image.readAsBytes().asStream(),
+        _image.lengthSync(),
+        filename: fileName
+      )
+    );
+    http.Response response = await http.Response.fromStream(await request.send());
+    Map<String, dynamic> result = json.decode(response.body.toString());
     await Future.delayed(Duration(seconds: 5));
     for (var key in result.keys){
       var newWidget = ListTile(

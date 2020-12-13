@@ -17,7 +17,6 @@ class DelicioraDishScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    // var height = size.height;
     var width = size.width;
     List<Widget> listOfIngredients = List();
     List<Widget> stepsToMakeDish = List();
@@ -30,7 +29,8 @@ class DelicioraDishScreen extends StatelessWidget {
         child: Text(
           item,
           style: GoogleFonts.montserrat(
-            fontSize: 17
+            fontSize: 17,
+            fontWeight: FontWeight.w300
           )
         ),
       );
@@ -45,7 +45,8 @@ class DelicioraDishScreen extends StatelessWidget {
         child: Text(
           step,
           style: GoogleFonts.montserrat(
-            fontSize: 17
+            fontSize: 17,
+            fontWeight: FontWeight.w300
           )
         ),
       );
