@@ -1,3 +1,7 @@
+import 'package:cuisinier/screens/RecipeDetails.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+
 List<String> spotifyPlaylists = [
   "https://open.spotify.com/playlist/3o7230LSFvwTLl3ZyjBE0x",
   "https://open.spotify.com/playlist/2Nsd4rLKXdDUcSdDWKQ1D6",
@@ -16,24 +20,66 @@ List<String> spotifyPlaylists = [
   "https://open.spotify.com/playlist/37i9dQZF1DXaq7lvg1a3j6"
 ];
 
-double hamingDistanceErrorPercentage(String one, String two){
+double hamingDistanceErrorPercentage(String one, String two) {
   var count = 0;
   var firstString = one.toLowerCase().trim();
   var secondString = two.toLowerCase().trim();
-  if(firstString.length < secondString.length){
-    for(var i = 0; i < firstString.length; i++){
-      if(firstString[i] != secondString[i]){
+  if (firstString.length < secondString.length) {
+    for (var i = 0; i < firstString.length; i++) {
+      if (firstString[i] != secondString[i]) {
         count = count + 1;
       }
     }
     return count / firstString.length;
-  }
-  else{
-    for(var i = 0; i < secondString.length; i++){
-      if(firstString[i] != secondString[i]){
+  } else {
+    for (var i = 0; i < secondString.length; i++) {
+      if (firstString[i] != secondString[i]) {
         count = count + 1;
       }
     }
     return count / secondString.length;
   }
+}
+
+convertNameToId(String name) {
+  name = name.toLowerCase();
+  String dataId = name.split(" ").join("-");
+  return dataId;
+}
+
+Future<String> buildRecipeUrl(String recipe) async {
+  String dataId = convertNameToId(recipe);
+
+  final DynamicLinkParameters parameters = DynamicLinkParameters(
+    uriPrefix: 'https://thecuisinier.page.link/',
+    link: Uri.parse('https://thecuisinier.page.link/$dataId'),
+    androidParameters: AndroidParameters(
+      packageName: 'app.thecuisinier.cuisinier',
+      minimumVersion: 0,
+    ),
+    dynamicLinkParametersOptions: DynamicLinkParametersOptions(
+      shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
+    ),
+  );
+
+  final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
+  final Uri shortUrl = shortDynamicLink.shortUrl;
+  return shortUrl.toString();
+}
+
+navigateToRecipeScreen(context) async {
+  FirebaseDynamicLinks.instance.onLink(
+      onSuccess: (PendingDynamicLinkData link) async {
+    final Uri deepLink = link?.link;
+    String newUrl = deepLink.path.substring(1);
+    print(newUrl);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                RecipeDetailsScreen(recipeId: newUrl)));
+  }, onError: (OnLinkErrorException e) async {
+    print('onLinkError');
+    print(e.message);
+  });
 }

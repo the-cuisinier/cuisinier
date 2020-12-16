@@ -3,35 +3,33 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cuisinier/utils/WaitingWidget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cuisinier/utils/utilities.dart';
 import 'dart:math';
 
 class RecipeDetailsScreen extends StatefulWidget {
-  
   final String recipeId;
-  RecipeDetailsScreen({
-    @required this.recipeId
-  });
+  RecipeDetailsScreen({@required this.recipeId});
 
   @override
   _RecipeDetailsScreenState createState() => _RecipeDetailsScreenState();
 }
 
 class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
-
   Map<String, dynamic> recipeDetails;
   List<Widget> listOfIngredients = List();
   List<Widget> listOfSteps = List();
 
   fetchRecipeDetails() async {
-    var recipeDocRef = await FirebaseFirestore.instance.collection("recipes").doc(widget.recipeId).get();
+    var recipeDocRef = await FirebaseFirestore.instance
+        .collection("recipes")
+        .doc(widget.recipeId)
+        .get();
     var recipeTutorial = recipeDocRef.data();
     for (var item in recipeTutorial["ingredients"]) {
       var newTempItem = Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 5
-        ),
+        padding: EdgeInsets.symmetric(vertical: 5),
         child: Row(
           children: [
             Icon(Icons.book),
@@ -48,35 +46,28 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       );
       listOfIngredients.add(newTempItem);
     }
-    if(recipeTutorial["instructions"].runtimeType == String){
+    if (recipeTutorial["instructions"].runtimeType == String) {
       var nextStep = Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: 3
-          ),
+          padding: EdgeInsets.symmetric(vertical: 3),
           child: Text(
             recipeTutorial["instructions"],
             maxLines: 2,
             overflow: TextOverflow.clip,
             style: GoogleFonts.montserrat(
                 fontSize: 15.0, fontWeight: FontWeight.w300),
-          )
-        );
-        listOfSteps.add(nextStep);
-    }
-    else{
+          ));
+      listOfSteps.add(nextStep);
+    } else {
       for (var step in recipeTutorial["instructions"]) {
         var nextStep = Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: 3
-          ),
-          child: Text(
-            step,
-            maxLines: 2,
-            overflow: TextOverflow.clip,
-            style: GoogleFonts.montserrat(
-                fontSize: 15.0, fontWeight: FontWeight.w300),
-          )
-        );
+            padding: EdgeInsets.symmetric(vertical: 3),
+            child: Text(
+              step,
+              maxLines: 2,
+              overflow: TextOverflow.clip,
+              style: GoogleFonts.montserrat(
+                  fontSize: 15.0, fontWeight: FontWeight.w300),
+            ));
         listOfSteps.add(nextStep);
       }
     }
@@ -93,115 +84,119 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return recipeDetails != null ? Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.white38,
-          leading: InkWell(
-            onTap: () => Navigator.pop(context),
-            child: InkWell(
-              onTap: () => Navigator.pop(context),
-              child: Icon(
-                Icons.chevron_left_outlined,
-                color: Colors.black,
-                size: 32.0,
-              ),
-            ),
-          ),
-          elevation: 0
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height / 2.8,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      recipeDetails["imageUrl"]
+    return recipeDetails != null
+        ? Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+                backgroundColor: Colors.white38,
+                leading: InkWell(
+                  onTap: () => Navigator.pop(context),
+                  child: InkWell(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(
+                      Icons.chevron_left_outlined,
+                      color: Colors.black,
+                      size: 32.0,
                     ),
-                    fit: BoxFit.cover
-                  )
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 5.0, bottom: 10.0, left: 12.0, right: 12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                elevation: 0),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height / 2.8,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: NetworkImage(recipeDetails["imageUrl"]),
+                            fit: BoxFit.cover)),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 5.0, bottom: 10.0, left: 12.0, right: 12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Flexible(
-                          child: Text(
-                            recipeDetails["name"],
-                            style: GoogleFonts.montserrat(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 25,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                recipeDetails["name"],
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 25,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                            overflow: TextOverflow.ellipsis,
+                            InkWell(
+                              child: Icon(
+                                Icons.share,
+                                size: 30.0,
+                              ),
+                              onTap: () async {
+                                String detail =
+                                    await buildRecipeUrl(recipeDetails["name"]);
+                                Share.share(
+                                    "Hey\nFound this recipe on Cuisinier. Check it out now => $detail");
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 24,
+                        ),
+                        Text(
+                          "Ingredients",
+                          style: GoogleFonts.raleway(
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black,
+                              fontSize: 25.0),
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Column(children: listOfIngredients),
+                        SizedBox(
+                          height: 15.0,
+                        ),
+                        Text(
+                          "Instructions",
+                          style: GoogleFonts.raleway(
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                            fontSize: 25.0,
                           ),
                         ),
-                        Icon(
-                          Icons.share,
-                          size: 30.0,
-                        ),
+                        Column(
+                          children: listOfSteps,
+                        )
                       ],
                     ),
-                    SizedBox(
-                      height: 24,
-                    ),
-                    Text(
-                      "Ingredients",
-                      style: GoogleFonts.raleway(
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black,
-                          fontSize: 25.0),
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Column(
-                      children: listOfIngredients
-                    ),
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    Text(
-                      "Instructions",
-                      style: GoogleFonts.raleway(
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                        fontSize: 25.0,
-                      ),
-                    ),
-                    Column(
-                      children: listOfSteps,
-                    )
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(FontAwesomeIcons.spotify),
-          onPressed: () async {
-            Random newRandomiserObject = Random();
-            String playlistUrl = spotifyPlaylists[newRandomiserObject.nextInt(spotifyPlaylists.length)];
-            if(await canLaunch(playlistUrl)){
-              await launch(playlistUrl);
-            }
-          },
-        ),
-      ) : Scaffold(
-        body: WaitingWidget(),
-      );
+            ),
+            floatingActionButton: FloatingActionButton(
+              child: Icon(FontAwesomeIcons.spotify),
+              onPressed: () async {
+                Random newRandomiserObject = Random();
+                String playlistUrl = spotifyPlaylists[
+                    newRandomiserObject.nextInt(spotifyPlaylists.length)];
+                if (await canLaunch(playlistUrl)) {
+                  await launch(playlistUrl);
+                }
+              },
+            ),
+          )
+        : Scaffold(
+            body: WaitingWidget(),
+          );
   }
 }

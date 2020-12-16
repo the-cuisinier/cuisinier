@@ -1,3 +1,4 @@
+import 'package:cuisinier/utils/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,26 +16,20 @@ class PageHandler extends StatefulWidget {
   final FirebaseAuth auth;
   final AuthHandlerState authHandler;
 
-  PageHandler({
-    @required this.authHandler,
-    @required this.auth
-  });
+  PageHandler({@required this.authHandler, @required this.auth});
 
   @override
   _PageHandlerState createState() => _PageHandlerState();
 }
 
 class _PageHandlerState extends State<PageHandler> {
-
   Widget currPage;
 
   @override
   void initState() {
     super.initState();
-    currPage = HomeScreen(
-      auth: widget.auth,
-      authHandler: widget.authHandler
-    );
+    navigateToRecipeScreen(context);
+    currPage = HomeScreen(auth: widget.auth, authHandler: widget.authHandler);
   }
 
   @override
@@ -43,9 +38,7 @@ class _PageHandlerState extends State<PageHandler> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(
-          color: Colors.black
-        ),
+        iconTheme: IconThemeData(color: Colors.black),
         title: Text(
           "The Cuisiner",
           style: GoogleFonts.montserrat(
@@ -74,76 +67,61 @@ class _PageHandlerState extends State<PageHandler> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          widget.authHandler.user.photoURL
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(widget.authHandler.user.photoURL),
+                          radius: 20,
                         ),
-                        radius: 20,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: 12
+                        Padding(
+                          padding: EdgeInsets.only(left: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(widget.authHandler.user.displayName,
+                                  style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                      fontSize: 18)),
+                              SizedBox(),
+                              Text(widget.authHandler.user.email,
+                                  style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.w300,
+                                      color: Colors.black,
+                                      fontSize: 15)),
+                            ],
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.authHandler.user.displayName,
-                              style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                                fontSize: 18
-                              )
-                            ),
-                            SizedBox(),
-                            Text(
-                              widget.authHandler.user.email,
-                              style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black,
-                                fontSize: 15
-                              )
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/background-vector.jpg"),
-                  fit: BoxFit.cover
-                )
-              )
-            ),
+                      ],
+                    )
+                  ],
+                ),
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image:
+                            AssetImage("assets/images/background-vector.jpg"),
+                        fit: BoxFit.cover))),
             ListTile(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
                 setState(() {
                   currPage = HomeScreen(
-                    auth: widget.auth,
-                    authHandler: widget.authHandler
-                  );
+                      auth: widget.auth, authHandler: widget.authHandler);
                 });
               },
               title: Text(
                 "MagicBook",
                 style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 18
-                ),
+                    fontWeight: FontWeight.w300, fontSize: 18),
               ),
             ),
             ListTile(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
                 setState(() {
                   currPage = ProfileScreen(
@@ -155,13 +133,11 @@ class _PageHandlerState extends State<PageHandler> {
               title: Text(
                 "My Profile",
                 style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 18
-                ),
+                    fontWeight: FontWeight.w300, fontSize: 18),
               ),
             ),
             ListTile(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
                 setState(() {
                   currPage = CookBookScreen(
@@ -173,13 +149,11 @@ class _PageHandlerState extends State<PageHandler> {
               title: Text(
                 "CookBook",
                 style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 18
-                ),
+                    fontWeight: FontWeight.w300, fontSize: 18),
               ),
             ),
             ListTile(
-              onTap: (){
+              onTap: () {
                 Navigator.pop(context);
                 setState(() {
                   currPage = DelicioraScreen();
@@ -188,32 +162,23 @@ class _PageHandlerState extends State<PageHandler> {
               title: Text(
                 "Deliciora",
                 style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 18
-                ),
+                    fontWeight: FontWeight.w300, fontSize: 18),
               ),
             ),
             ListTile(
-              onTap: () async{
+              onTap: () async {
                 Navigator.pop(context);
                 String websiteUrl = 'https://the-cuisinier.web.app/';
-                if(await canLaunch(websiteUrl)){
+                if (await canLaunch(websiteUrl)) {
                   await launch(websiteUrl);
-                }
-                else{
-                  Alert(
-                      context: context,
-                      title:
-                          "An error occured.")
-                  .show();
+                } else {
+                  Alert(context: context, title: "An error occured.").show();
                 }
               },
               title: Text(
                 "About the Developers",
                 style: GoogleFonts.montserrat(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 18
-                ),
+                    fontWeight: FontWeight.w300, fontSize: 18),
               ),
             ),
           ],
