@@ -56,6 +56,7 @@ Future<String> buildRecipeUrl(String recipe) async {
     androidParameters: AndroidParameters(
       packageName: 'app.thecuisinier.cuisinier',
       minimumVersion: 0,
+      fallbackUrl: Uri.parse('https://the-cuisinier.web.app/')
     ),
     dynamicLinkParametersOptions: DynamicLinkParametersOptions(
       shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
