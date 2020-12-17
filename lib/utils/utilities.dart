@@ -67,17 +67,22 @@ Future<String> buildRecipeUrl(String recipe) async {
   return shortUrl.toString();
 }
 
-navigateToRecipeScreen(context) async {
-  FirebaseDynamicLinks.instance.onLink(
-      onSuccess: (PendingDynamicLinkData link) async {
-    final Uri deepLink = link?.link;
+handleNavigationPath(link, context){
+  final Uri deepLink = link?.link;
     String newUrl = deepLink.path.substring(1);
-    print(newUrl);
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (BuildContext context) =>
                 RecipeDetailsScreen(recipeId: newUrl)));
+}
+
+navigateToRecipeScreen(context) async {
+  var link = await FirebaseDynamicLinks.instance.getInitialLink();
+  handleNavigationPath(link, context);
+  FirebaseDynamicLinks.instance.onLink(
+      onSuccess: (PendingDynamicLinkData link) async {
+    handleNavigationPath(link, context);
   }, onError: (OnLinkErrorException e) async {
     print('onLinkError');
     print(e.message);
