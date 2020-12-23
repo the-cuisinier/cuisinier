@@ -29,3 +29,10 @@ Even a small contribution could make a huge difference :)
 
 ## Reporting Bugs
 Just open an issue you face while using our app. Our team would get on to it ASAP.
+
+# License
+The GNU General Public License v3.0
+
+Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights.
+
+Check out the [LICENSE](./LICENSE.md) file for more detailed information.
