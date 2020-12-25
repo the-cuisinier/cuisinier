@@ -75,41 +75,48 @@ class _InventoryScreenState extends State<InventoryScreen> {
               return EmptyWidget();
             } else {
               List<Widget> listOfIngredients = List();
+              Map<String, dynamic> newIngredientsMap = {};
               for (var key in ingredients.keys) {
-                Widget newIngredient = ListTile(
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => EditUpdateIngredientScreen(
-                          user: widget.authHandler.user,
-                          unit: ingredients[key]["unit"].toString(),
-                          ingredientName: key,
-                          quantity: ingredients[key]["quantity"]
+                if(ingredients[key]["quantity"] != 0){
+                  Widget newIngredient = ListTile(
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => EditUpdateIngredientScreen(
+                            user: widget.authHandler.user,
+                            unit: ingredients[key]["unit"].toString(),
+                            ingredientName: key,
+                            quantity: ingredients[key]["quantity"]
+                          )
                         )
+                      ).then((value) => setState((){}));
+                    },
+                    title: Text(
+                      key,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300
                       )
-                    ).then((value) => setState((){}));
-                  },
-                  title: Text(
-                    key,
-                    style: GoogleFonts.montserrat(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w300
-                    )
-                  ),
-                  subtitle: Text(
-                    ingredients[key]["quantity"].toString() + " " + ingredients[key]["unit"].toString(),
-                    style: GoogleFonts.montserrat(
-                      fontWeight: FontWeight.w300
                     ),
-                  ),
-                  trailing: Icon(
-                    FontAwesomeIcons.chevronRight,
-                    size: 15,
-                  ),
-                );
-                listOfIngredients.add(newIngredient);
+                    subtitle: Text(
+                      ingredients[key]["quantity"].toString() + " " + ingredients[key]["unit"].toString(),
+                      style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.w300
+                      ),
+                    ),
+                    trailing: Icon(
+                      FontAwesomeIcons.chevronRight,
+                      size: 15,
+                    ),
+                  );
+                  listOfIngredients.add(newIngredient);
+                  newIngredientsMap[key] = ingredients[key];
+                }
+              }
+              if(ingredients.isNotEmpty){
+                FirebaseFirestore.instance.collection("inventory").doc(widget.authHandler.user.uid).set(newIngredientsMap);
               }
               return SingleChildScrollView(
                 child: Center(

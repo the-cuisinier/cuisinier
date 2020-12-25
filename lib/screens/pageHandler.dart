@@ -181,6 +181,22 @@ class _PageHandlerState extends State<PageHandler> {
                     fontWeight: FontWeight.w300, fontSize: 18),
               ),
             ),
+            ListTile(
+              onTap: () async {
+                Navigator.pop(context);
+                String websiteUrl = 'https://devfolio.co/submissions/cuisiner';
+                if (await canLaunch(websiteUrl)) {
+                  await launch(websiteUrl);
+                } else {
+                  Alert(context: context, title: "An error occured.").show();
+                }
+              },
+              title: Text(
+                "Support this project",
+                style: GoogleFonts.montserrat(
+                    fontWeight: FontWeight.w300, fontSize: 18),
+              ),
+            ),
           ],
         ),
       ),

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:cuisinier/utils/auth.dart';
+import 'package:cuisinier/screens/favoriteDishes.dart';
 
 class ProfileScreen extends StatefulWidget {
   final FirebaseAuth auth;
@@ -68,6 +69,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(
               height: 72,
+            ),
+            FlatButton(
+                color: Colors.white,
+                splashColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(64.0),
+                    side: BorderSide(color: Colors.red, width: 2)),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => FavoriteDishes(authHandler: widget.authHandler, auth: widget.auth))),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 18,
+                        width: 18,
+                        child: Icon(Icons.favorite, color: Colors.red,)
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text("Favorite Dishes",
+                          style: GoogleFonts.montserrat(
+                              fontSize: 15,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500))
+                    ],
+                  ),
+                )),
+            SizedBox(
+              height: 24,
             ),
             FlatButton(
                 color: Colors.white,
